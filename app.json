@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "ProList Mobile",
+    "slug": "prolist-mobile",
+    "scheme": "prolist",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.prolist.app"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
