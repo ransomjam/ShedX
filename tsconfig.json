@@ -1,20 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "esnext",
     "module": "esnext",
-    "jsx": "react",
-    "strict": true,
+    "jsx": "react-native",
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "src/*"
       ]
-    }
+    },
+    "moduleResolution": "bundler",
+    "strict": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
   "exclude": [
     "node_modules"
   ],

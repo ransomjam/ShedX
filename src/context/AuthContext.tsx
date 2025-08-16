@@ -1,60 +1,59 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import client from "@/api/client";
+import { loginAPI, registerAPI, RegisterInput, User } from "../services/api";
 
-type User = { id: string; name: string; email: string };
-
-type AuthContextType = {
+type AuthCtx = {
   user: User | null;
-  token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  loading: boolean;
+  login: (username: string, password: string) => Promise<void>;
+  register: (input: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
 };
 
-const AuthContext = createContext<AuthContextType>({} as any);
-export const useAuth = () => useContext(AuthContext);
+const Ctx = createContext<AuthCtx | null>(null);
+const KEY_USER = "prolist_user";
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const t = await SecureStore.getItemAsync("token");
-      if (t) {
-        setToken(t);
-        try {
-          const { data } = await client.get("/auth/me");
-          setUser(data);
-        } catch {}
+      try {
+        const rawUser = await SecureStore.getItemAsync(KEY_USER);
+        if (rawUser) setUser(JSON.parse(rawUser));
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    const { data } = await client.post("/auth/login", { email, password });
-    await SecureStore.setItemAsync("token", data.token);
-    setToken(data.token);
-    setUser(data.user);
+  const login = async (username: string, password: string) => {
+    const u = await loginAPI(username, password);
+    setUser(u);
+    await SecureStore.setItemAsync(KEY_USER, JSON.stringify(u));
   };
 
-  const register = async (name: string, email: string, password: string) => {
-    const { data } = await client.post("/auth/register", { name, email, password });
-    await SecureStore.setItemAsync("token", data.token);
-    setToken(data.token);
-    setUser(data.user);
+  const register = async (input: RegisterInput) => {
+    const u = await registerAPI(input);
+    setUser(u);
+    await SecureStore.setItemAsync(KEY_USER, JSON.stringify(u));
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync("token");
-    setToken(null);
     setUser(null);
+    await SecureStore.deleteItemAsync(KEY_USER);
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout }}>
+    <Ctx.Provider value={{ user, loading, login, register, logout }}>
       {children}
-    </AuthContext.Provider>
+    </Ctx.Provider>
   );
-};
+}
+
+export function useAuth() {
+  const v = useContext(Ctx);
+  if (!v) throw new Error("useAuth must be used within AuthProvider");
+  return v;
+}

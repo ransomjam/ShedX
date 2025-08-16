@@ -1,26 +1,41 @@
 import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "@/screens/HomeScreen";
-import ChatsScreen from "@/screens/ChatsScreen";
-import OrdersScreen from "@/screens/OrdersScreen";
-import ProfileScreen from "@/screens/ProfileScreen";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import HomeScreen from "../screens/HomeScreen";
+import ProductsScreen from "../screens/ProductsScreen";
+import CreateListingScreen from "../screens/CreateListingScreen";
+import OrdersScreen from "../screens/OrdersScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+import { AuthProvider } from "../context/AuthContext";
 
-export type TabParamList = {
-  HomeTab: undefined;
-  ChatsTab: undefined;
-  OrdersTab: undefined;
-  ProfileTab: undefined;
-};
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-const Tab = createBottomTabNavigator<TabParamList>();
-
-export default function TabsNavigator() {
+function Tabs() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="HomeTab" component={HomeScreen} options={{ title: "Home" }} />
-      <Tab.Screen name="ChatsTab" component={ChatsScreen} options={{ title: "Chats" }} />
-      <Tab.Screen name="OrdersTab" component={OrdersScreen} options={{ title: "Orders" }} />
-      <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ title: "Profile" }} />
+    <Tab.Navigator screenOptions={{ headerTitleAlign: "left" }}>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Browse" component={ProductsScreen} />
+      <Tab.Screen name="Sell" component={CreateListingScreen} />
+      <Tab.Screen name="Orders" component={OrdersScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
+  );
+}
+
+export function TabsNavigation() {
+  return (
+    <AuthProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Tabs" component={Tabs} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthProvider>
   );
 }

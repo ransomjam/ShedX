@@ -1,52 +1,67 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
-import { useAuth } from "@/context/AuthContext";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/navigation";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useAuth } from "../context/AuthContext";
+import { colors } from "../theme";
+import Button from "../components/ui/Button";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Login">;
-
-export default function LoginScreen({ navigation }: Props) {
+export default function LoginScreen({ navigation }: any) {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
 
-  const onLogin = async () => {
-    if (!email || !password) return Alert.alert("Missing info", "Email and password are required.");
+  const onSubmit = async () => {
+    setErr("");
+    setLoading(true);
     try {
-      setLoading(true);
-      await login(email.trim(), password);
+      await login(username.trim(), password);
     } catch (e: any) {
-      Alert.alert("Login failed", e?.message || "Please check your details and try again.");
+      setErr(e.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, justifyContent: "center" }}>
-      <Text style={{ fontSize: 24, fontWeight: "700", marginBottom: 16 }}>Welcome back</Text>
-      <TextInput
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-        style={{ borderWidth: 1, borderColor: "#ddd", borderRadius: 10, padding: 12, marginBottom: 12 }}
-      />
-      <TextInput
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        style={{ borderWidth: 1, borderColor: "#ddd", borderRadius: 10, padding: 12, marginBottom: 12 }}
-      />
-      <Button title={loading ? "Logging in..." : "Login"} onPress={onLogin} />
-      <View style={{ height: 12 }} />
-      <Button title="Forgot password?" onPress={() => navigation.navigate("PasswordReset")} />
-      <View style={{ height: 12 }} />
-      <Button title="Create account" onPress={() => navigation.navigate("Register")} />
+    <View style={{ flex: 1, padding: 20, justifyContent: "center", gap: 16 }}>
+      <Text style={{ fontSize: 28, fontWeight: "700" }}>Welcome back</Text>
+
+      <View>
+        <Text style={{ marginBottom: 6 }}>Username or Email</Text>
+        <TextInput
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          placeholder="e.g. jam"
+          style={{ borderWidth: 1, borderRadius: 10, padding: 12 }}
+        />
+      </View>
+
+      <View>
+        <Text style={{ marginBottom: 6 }}>Password</Text>
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPw}
+          placeholder="••••••••"
+          style={{ borderWidth: 1, borderRadius: 10, padding: 12 }}
+        />
+        <TouchableOpacity onPress={() => setShowPw((s) => !s)} style={{ marginTop: 8 }}>
+          <Text style={{ color: colors.primary }}>{showPw ? "Hide" : "Show"} password</Text>
+        </TouchableOpacity>
+      </View>
+
+      {err ? <Text style={{ color: "red" }}>{err}</Text> : null}
+
+      <Button title="Sign in" onPress={onSubmit} loading={loading} />
+
+      <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+        <Text>
+          Don’t have an account? <Text style={{ color: colors.primary, fontWeight: "700" }}>Sign up</Text>
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
