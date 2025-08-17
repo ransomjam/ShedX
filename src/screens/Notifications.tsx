@@ -1,41 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
-import { optionalApi } from '../api/optional';
+import React from 'react';
+import { View, Text } from 'react-native';
 
-type Noti = { id: number|string; title: string; body?: string; read?: boolean; ts?: string };
-
-const FALLBACK: Noti[] = [
-  { id: 1, title: 'Welcome to ProList', body: 'Thanks for joining! Start by exploring verified businesses.', read: false },
-  { id: 2, title: 'Vendor response', body: 'Bright Phones replied to your message.', read: false },
-  { id: 3, title: 'Price drop', body: 'A product you saved has a new price.', read: true },
-];
-
-export default function NotificationsScreen() {
-  const [items, setItems] = useState<Noti[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      let data = await optionalApi.listNotifications();
-      if (!Array.isArray(data) || !data.length) data = FALLBACK;
-      setItems(data as Noti[]);
-      setLoading(false);
-    })();
-  }, []);
-
-  if (loading) return <View style={{ flex:1, alignItems:'center', justifyContent:'center' }}><ActivityIndicator /></View>;
-
+export default function Notifications() {
   return (
-    <FlatList
-      data={items}
-      keyExtractor={(m) => String(m.id)}
-      contentContainerStyle={{ padding: 16, gap: 10 }}
-      renderItem={({ item }) => (
-        <View style={{ padding: 12, borderRadius: 12, borderWidth: 1, borderColor: item.read ? '#e5e7eb' : '#2563eb33', backgroundColor: item.read ? '#fff' : '#dbeafe' }}>
-          <Text style={{ fontWeight: '800', marginBottom: 4 }}>{item.title}</Text>
-          {item.body ? <Text style={{ color: '#475569' }}>{item.body}</Text> : null}
-        </View>
-      )}
-    />
+    <View className="flex-1 items-center justify-center bg-white p-6">
+      <Text className="text-lg font-semibold mb-2">Notifications</Text>
+      <Text className="text-gray-600 text-center">
+        Placeholder screen. Next step: poll /api/notifications or use websockets.
+      </Text>
+    </View>
   );
 }

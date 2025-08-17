@@ -1,42 +1,70 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator } from "react-native";
-import { api } from "../api/client";
+import React from "react";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigation } from "@react-navigation/native";
 
-type Product = { id: string; title: string; price?: number };
+const API_URL = process.env.EXPO_PUBLIC_API_URL || "https://backendshedx-production.up.railway.app";
+
+type Product = {
+  id: string;
+  title: string;
+  price: number;
+};
+
+async function fetchProducts() {
+  const res = await fetch(`${API_URL}/api/products`);
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.json();
+}
 
 export default function ProductsScreen() {
-  const [items, setItems] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const navigation = useNavigation<any>();
+  const { data, isLoading, error } = useQuery<Product[]>({
+    queryKey: ["products"],
+    queryFn: fetchProducts,
+  });
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await api.get("/products?limit=10");
-        setItems(data.items || data);
-      } catch (e: any) {
-        setError(e.message || "Failed to load");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text>Loading…</Text>
+      </View>
+    );
+  }
 
-  if (loading) return <View style={{ flex:1, alignItems:"center", justifyContent:"center" }}><ActivityIndicator size="large" /></View>;
-  if (error) return <View style={{ padding:16 }}><Text style={{ color: "red" }}>{error}</Text></View>;
+  if (error || !data) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text>Failed to load products.</Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
+      data={data}
+      keyExtractor={(item) => String(item.id)}
       contentContainerStyle={{ padding: 16 }}
-      data={items}
-      keyExtractor={(i) => String(i.id)}
       renderItem={({ item }) => (
-        <View style={{ padding: 12, backgroundColor: "#fff", borderRadius: 12, marginBottom: 10 }}>
-          <Text style={{ fontWeight: "700" }}>{item.title}</Text>
-          {item.price != null && <Text>FCFA {Number(item.price).toLocaleString()}</Text>}
-        </View>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ProductDetails", { id: item.id })}
+          style={{
+            padding: 12,
+            backgroundColor: "#fff",
+            borderRadius: 12,
+            marginBottom: 12,
+            borderWidth: 1,
+            borderColor: "#eee",
+          }}
+        >
+          <Text style={{ fontSize: 16, fontWeight: "600" }}>{item.title}</Text>
+          {item.price != null && (
+            <Text style={{ fontSize: 14, marginTop: 4, color: "#444" }}>
+              FCFA {Number(item.price).toLocaleString()}
+            </Text>
+          )}
+        </TouchableOpacity>
       )}
-      ListEmptyComponent={<Text style={{ textAlign: "center", color: "#777" }}>No products.</Text>}
     />
   );
 }

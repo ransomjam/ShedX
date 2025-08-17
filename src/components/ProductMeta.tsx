@@ -1,12 +1,13 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React from 'react';
+import { View, Text } from 'react-native';
 
-export default function ProductMeta({ label, value }: { label: string; value?: string | number }) {
-  if (!value && value !== 0) return null;
+type RowProps = { label: string; value?: string | number | null };
+export default function ProductMetaRow({ label, value }: RowProps) {
+  if (value === undefined || value === null || value === '') return null;
   return (
-    <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 8 }}>
-      <Text style={{ color: "#666" }}>{label}</Text>
-      <Text style={{ fontWeight: "600" }}>{String(value)}</Text>
+    <View className="flex-row justify-between items-start py-2">
+      <Text className="text-gray-500 w-32">{label}</Text>
+      <Text className="flex-1 pl-3 text-gray-900">{String(value)}</Text>
     </View>
   );
 }

@@ -19,6 +19,12 @@
     },
     "web": {
       "bundler": "metro"
+    },
+    "extra": {
+      "apiUrl": "https://backendshedx-production.up.railway.app",
+      "eas": {
+        "projectId": "a3d3851e-c6c3-4aa2-8c44-7f4b3e084596"
+      }
     }
   }
 }
