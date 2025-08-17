@@ -1,0 +1,43 @@
+name: EAS Update (auto-deploy to phone)
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  eas-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          if [ -f yarn.lock ]; then
+            corepack enable
+            yarn --immutable || yarn
+          else
+            npm ci || npm i
+          fi
+
+      - name: Setup EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Run EAS Update
+        env:
+          GIT_SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          CHANNEL=$([ "$BRANCH" = "main" ] && echo "production" || echo "preview")
+          npx eas update --auto --non-interactive --channel "$CHANNEL" --message "CI ${GIT_SHA::7} on ${BRANCH}"
