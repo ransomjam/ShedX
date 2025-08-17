@@ -1,34 +1,49 @@
-import { API_URL } from "../../config";
-import { getToken } from "../auth/token";
+import * as SecureStore from 'expo-secure-store';
 
-const BASE = (API_URL || "").replace(/\/$/, "");
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://backendshedx-production.up.railway.app';
 
-async function request(path: string, options: RequestInit = {}) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...(options.headers as any || {}),
-  };
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+async function getToken(): Promise<string | null> {
+  try { return await SecureStore.getItemAsync('shedx_token'); } catch { return null; }
+}
+
+async function request(path: string, method: HttpMethod = 'GET', body?: any) {
   const token = await getToken();
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const res = await fetch(BASE + path, { ...options, headers });
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
   const text = await res.text();
-  let data: any = null;
-  try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  let json: any;
+  try { json = text ? JSON.parse(text) : {}; } catch { json = { raw: text }; }
+
   if (!res.ok) {
-    const msg = (data && (data.error || data.message)) || res.statusText || "Request failed";
-    const err: any = new Error(msg);
-    (err as any).status = res.status;
-    (err as any).data = data;
-    throw err;
+    const msg = (json && (json.message || json.error)) || `HTTP ${res.status}`;
+    throw new Error(msg);
   }
-  return data;
+  return json;
 }
 
 export const api = {
-  get: (path: string, init: RequestInit = {}) => request(path, { method: "GET", ...init }),
-  post: (path: string, body?: any, init: RequestInit = {}) =>
-    request(path, { method: "POST", body: JSON.stringify(body ?? {}), ...init }),
-};
+  // Auth
+  login: (email: string, password: string) => request('/api/auth/login', 'POST', { email, password }),
+  me: () => request('/api/users/me', 'GET'),
 
-export default api;
+  // Products
+  listProducts: () => request('/api/products', 'GET'),
+  getProduct: (id: number | string) => request(`/api/products/${id}`, 'GET'),
+  searchProducts: (q: string) => request(`/api/products/search?q=${encodeURIComponent(q)}`, 'GET'),
+
+  // Vendors
+  getVendor: (id: string | number) => request(`/api/vendors/${id}`, 'GET'),
+  getVendorProducts: (id: string | number) => request(`/api/vendors/${id}/products`, 'GET'),
+
+  // Categories (optional endpoint; fallback client-side)
+  listCategories: () => request('/api/products/categories', 'GET'),
+};

@@ -1,95 +1,75 @@
 import React from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Text } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Ionicons } from "@expo/vector-icons";
+import { View, Text } from "react-native";
 
-// Screens (ensure these paths match your project)
-import Messages from "../screens/Messages";
-import ChatThread from "../screens/ChatThread";
-import Notifications from "../screens/Notifications";
+// Screens
+import Listings from "../screens/Listings";
 
-// Optional: existing app screens (use placeholders if not present yet)
-const Placeholder = ({ title }: { title: string }) => <Text style={{ padding: 16 }}>{title}</Text>;
-
-// ---- Param Lists ----
-export type RootStackParamList = {
-  Tabs: undefined;
-  ChatThread: { threadId: string; peerId?: string; title?: string };
-};
-
-export type TabsParamList = {
-  Home: undefined;
-  Listings: undefined;
-  MessagesTab: undefined;
-  NotificationsTab: undefined;
-  Profile: undefined;
-};
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator<TabsParamList>();
-
-function Tabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Tab.Screen
-        name="Home"
-        // @ts-ignore
-        component={() => <Placeholder title="Home (hook up your Home screen here)" />}
-        options={{ title: "Home" }}
-      />
-      <Tab.Screen
-        name="Listings"
-        // @ts-ignore
-        component={() => <Placeholder title="Listings (hook up your Listings screen here)" />}
-        options={{ title: "Listings" }}
-      />
-      <Tab.Screen
-        name="MessagesTab"
-        component={Messages}
-        options={{ title: "Messages" }}
-      />
-      <Tab.Screen
-        name="NotificationsTab"
-        component={Notifications}
-        options={{ title: "Alerts" }}
-      />
-      <Tab.Screen
-        name="Profile"
-        // @ts-ignore
-        component={() => <Placeholder title="Profile (hook up your Profile screen here)" />}
-        options={{ title: "Profile" }}
-      />
-    </Tab.Navigator>
-  );
+// Simple placeholders to avoid import errors until real screens are wired
+function HomeScreen() {
+  return <View style={{ flex:1, alignItems:'center', justifyContent:'center' }}><Text style={{ fontSize:18 }}>Home</Text></View>;
+}
+function MarketsScreen() {
+  return <View style={{ flex:1, alignItems:'center', justifyContent:'center' }}><Text style={{ fontSize:18 }}>Markets</Text></View>;
+}
+function AssetsScreen() {
+  return <View style={{ flex:1, alignItems:'center', justifyContent:'center' }}><Text style={{ fontSize:18 }}>Assets</Text></View>;
+}
+function ServicesScreen() {
+  return <View style={{ flex:1, alignItems:'center', justifyContent:'center' }}><Text style={{ fontSize:18 }}>Services</Text></View>;
+}
+function AuctionsScreen() {
+  return <View style={{ flex:1, alignItems:'center', justifyContent:'center' }}><Text style={{ fontSize:18 }}>Auctions</Text></View>;
 }
 
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: "#fff",
-  },
-};
+// Detail routes used by Listings
+import ProductDetails from "../screens/ProductDetails";
+import AddListing from "../screens/AddListing";
+
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+const Tabs = () => (
+  <Tab.Navigator
+    initialRouteName="Listings"
+    screenOptions={({ route }) => ({
+      headerTitleAlign: "center",
+      tabBarShowLabel: true,
+      tabBarActiveTintColor: "#2563eb",
+      tabBarInactiveTintColor: "#64748b",
+      tabBarStyle: { borderTopWidth: 0.5, borderTopColor: "#e5e7eb" },
+      tabBarIcon: ({ color, size }) => {
+        const map: any = {
+          Home: "home-outline",
+          Listings: "grid-outline",
+          Markets: "pricetag-outline",
+          Assets: "briefcase-outline",
+          Services: "bag-outline",
+          Auctions: "cash-outline",
+        };
+        return <Ionicons name={map[route.name] || "ellipse-outline"} size={size} color={color} />;
+      },
+    })}
+  >
+    <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Screen name="Listings" component={Listings} />
+    <Tab.Screen name="Markets" component={MarketsScreen} />
+    <Tab.Screen name="Assets" component={AssetsScreen} />
+    <Tab.Screen name="Services" component={ServicesScreen} />
+    <Tab.Screen name="Auctions" component={AuctionsScreen} />
+  </Tab.Navigator>
+);
 
 export default function AppNavigator() {
   return (
-    <NavigationContainer theme={theme}>
+    <NavigationContainer theme={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: "#ffffff" } }}>
       <Stack.Navigator>
-        <Stack.Screen
-          name="Tabs"
-          component={Tabs}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ChatThread"
-          component={ChatThread}
-          options={{ title: "Chat" }}
-        />
+        <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
+        <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ title: "Details" }} />
+        <Stack.Screen name="AddListing" component={AddListing} options={{ title: "Add Listing" }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
