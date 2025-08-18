@@ -1,72 +1,87 @@
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { View, Text, ImageBackground, TouchableOpacity, FlatList } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/useAuth";
-import api from "../lib/api";
-
-type Product = { id: string | number; title: string };
+import { useQuery } from "@tanstack/react-query";
+import { listProductsAPI, Product } from "../services/api";
+import { colors, spacing, typography } from "../theme";
+import ProductCard from "../components/ProductCard";
 
 export default function Home() {
-  const { user, token } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [err, setErr] = useState<string | null>(null);
-
-  const load = async () => {
-    setErr(null);
-    try {
-      const data = await api.get<Product[]>("/api/products", token);
-      setProducts(Array.isArray(data) ? data : []);
-    } catch (e: any) {
-      setErr(e?.message ?? "Failed to load");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  useEffect(() => { load(); }, []);
+  const { user } = useAuth();
+  const nav = useNavigation<any>();
+  const { data = [] } = useQuery({ queryKey: ["homeProducts"], queryFn: listProductsAPI });
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} />}
-    >
-      <Text style={styles.hi}>Hi, {user?.name || "there"} 👋</Text>
-      <Text style={styles.sub}>Welcome to SHEDX. This Home shows live data from your backend.</Text>
+    <FlatList
+      ListHeaderComponent={
+        <View>
+          <ImageBackground
+            source={{
+              uri: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60",
+            }}
+            style={{ padding: spacing.lg, paddingTop: spacing.xl }}
+            imageStyle={{ borderBottomLeftRadius: spacing.lg, borderBottomRightRadius: spacing.lg }}
+          >
+            <Text style={{ ...typography.h2, color: "white" }}>Welcome back, {user?.name || ""}!</Text>
+            <Text style={{ color: "white", marginTop: spacing.sm }}>
+              Discover amazing deals, connect with local vendors, and explore Bamenda's vibrant marketplace ecosystem.
+            </Text>
+          </ImageBackground>
 
-      {loading ? (
-        <View style={styles.center}><ActivityIndicator /><Text style={styles.dim}>Loading…</Text></View>
-      ) : err ? (
-        <Text style={styles.err}>{err}</Text>
-      ) : (
-        <View style={styles.cards}>
-          <View style={styles.card}>
-            <Text style={styles.cardNum}>{products.length}</Text>
-            <Text style={styles.cardLbl}>Products</Text>
+          <View
+            style={{
+              padding: spacing.lg,
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+            }}
+          >
+            <QuickAction icon="cart-outline" label="Browse Products" onPress={() => nav.navigate("Listings")} />
+            <QuickAction icon="hammer" label="Live Auctions" onPress={() => nav.navigate("Auctions")} />
+            <QuickAction icon="construct-outline" label="Find Services" onPress={() => nav.navigate("Services")} />
+            <QuickAction icon="add-circle-outline" label="Add Listing" onPress={() => nav.navigate("AddListing")} />
           </View>
-          <View style={styles.card}>
-            <Text style={styles.cardNum}>{products.slice(0, 5).length}</Text>
-            <Text style={styles.cardLbl}>New (sample)</Text>
-          </View>
+
+          <Text style={{ ...typography.h2, paddingHorizontal: spacing.lg }}>Recommended</Text>
         </View>
+      }
+      contentContainerStyle={{ padding: spacing.lg, paddingTop: 0, gap: spacing.lg }}
+      data={data}
+      keyExtractor={(item: Product) => String(item.id)}
+      renderItem={({ item }) => (
+        <ProductCard product={item} onPress={() => nav.navigate("ProductDetails", { id: item.id })} />
       )}
-
-      <View style={{ height: 24 }} />
-      <Text style={styles.dim}>API base: {process.env.EXPO_PUBLIC_API_URL}</Text>
-    </ScrollView>
+      ItemSeparatorComponent={() => <View style={{ height: spacing.lg }} />}
+    />
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: 16 },
-  hi: { fontSize: 22, fontWeight: "800" },
-  sub: { marginTop: 6, color: "#6B7280" },
-  center: { paddingVertical: 40, alignItems: "center", gap: 8 },
-  dim: { color: "#6B7280", fontSize: 12 },
-  err: { color: "#b00020" },
-  cards: { flexDirection: "row", gap: 12, marginTop: 16 },
-  card: { flex: 1, backgroundColor: "#F3F4F6", borderRadius: 16, padding: 16 },
-  cardNum: { fontSize: 28, fontWeight: "900" },
-  cardLbl: { color: "#6B7280", marginTop: 4 },
-});
+function QuickAction({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        width: "48%",
+        backgroundColor: colors.card,
+        borderRadius: spacing.md,
+        padding: spacing.lg,
+        marginBottom: spacing.lg,
+        alignItems: "center",
+      }}
+    >
+      <Ionicons name={icon} size={32} color={colors.primary} />
+      <Text style={{ marginTop: spacing.sm, textAlign: "center" }}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
