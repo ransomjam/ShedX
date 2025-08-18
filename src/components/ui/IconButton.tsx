@@ -9,11 +9,23 @@ export default function IconButton({
   return (
     <View style={{ position: "relative" }}>
       <TouchableOpacity onPress={onPress} style={{ padding: spacing.sm, borderRadius: radii.sm }}>
-        <Feather name={name} size={22} color={colors.text} />
+        <Feather name={name} size={22} color={colors.primary} />
       </TouchableOpacity>
       {badge ? (
-        <View style={{ position: "absolute", top: 2, right: 2, minWidth: 16, height: 16, borderRadius: 8,
-          backgroundColor: colors.danger, alignItems: "center", justifyContent: "center", paddingHorizontal: 3 }}>
+        <View
+          style={{
+            position: "absolute",
+            top: 2,
+            right: 2,
+            minWidth: 16,
+            height: 16,
+            borderRadius: 8,
+            backgroundColor: colors.success,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 3,
+          }}
+        >
           <Text style={{ color: "white", fontSize: 10, fontWeight: "800" }}>{badge}</Text>
         </View>
       ) : null}
