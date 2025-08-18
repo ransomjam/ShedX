@@ -7,13 +7,16 @@ import { colors, spacing, typography } from "../theme";
 import { Card } from "../components/ui/Card";
 import StatTile from "../components/ui/StatTile";
 import ProductCard from "../components/ProductCard";
+import TopBar from "../components/ui/TopBar";
 
 export default function HomeScreen() {
   const nav = useNavigation<any>();
   const { data = [] } = useQuery({ queryKey: ["products"], queryFn: listProductsAPI });
 
   return (
-    <FlatList
+    <View style={{ flex: 1 }}>
+      <TopBar />
+      <FlatList
       ListHeaderComponent={
         <View style={{ padding: spacing.lg, gap: spacing.lg }}>
           {/* Live Auctions promo */}
@@ -49,5 +52,6 @@ export default function HomeScreen() {
       )}
       ItemSeparatorComponent={() => <View style={{ height: spacing.lg }} />}
     />
+    </View>
   );
 }

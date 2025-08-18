@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchProducts } from '../api/products';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import TopBar from '../components/ui/TopBar';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Listings'>;
 
@@ -16,35 +17,38 @@ export default function Listings() {
   if (isError) return <View className="flex-1 items-center justify-center"><Text>Failed to load.</Text></View>;
 
   return (
-    <FlatList
-      data={data}
-      keyExtractor={(item: any) => String(item.id)}
-      contentContainerStyle={{ padding: 12 }}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ProductDetails', { id: String(item.id) })}
-          className="bg-white rounded-2xl p-4 mb-3 border border-gray-200"
-        >
-          <Text className="text-base font-semibold mb-1">{item.title}</Text>
-          <Text className="text-gray-600">ID: {String(item.id)}</Text>
+    <View style={{ flex: 1 }}>
+      <TopBar />
+      <FlatList
+        data={data}
+        keyExtractor={(item: any) => String(item.id)}
+        contentContainerStyle={{ padding: 12 }}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ProductDetails', { id: String(item.id) })}
+            className="bg-white rounded-2xl p-4 mb-3 border border-gray-200"
+          >
+            <Text className="text-base font-semibold mb-1">{item.title}</Text>
+            <Text className="text-gray-600">ID: {String(item.id)}</Text>
 
-          <View className="mt-3 flex-row gap-8">
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ProductDetails', { id: String(item.id) })}
-              className="bg-black rounded-2xl py-2 px-4 items-center"
-            >
-              <Text className="text-white">View</Text>
-            </TouchableOpacity>
+            <View className="mt-3 flex-row gap-8">
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ProductDetails', { id: String(item.id) })}
+                className="bg-black rounded-2xl py-2 px-4 items-center"
+              >
+                <Text className="text-white">View</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => Alert.alert('Your Price', 'Feature coming soon!')}
-              className="rounded-2xl py-2 px-4 border border-gray-300 items-center"
-            >
-              <Text className="text-gray-900">Your Price</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      )}
-    />
+              <TouchableOpacity
+                onPress={() => Alert.alert('Your Price', 'Feature coming soon!')}
+                className="rounded-2xl py-2 px-4 border border-gray-300 items-center"
+              >
+                <Text className="text-gray-900">Your Price</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
   );
 }
