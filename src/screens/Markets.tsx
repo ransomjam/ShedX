@@ -6,7 +6,7 @@ type Market = { id: number|string; name: string; image?: string };
 
 const FALLBACK: Market[] = [
   { id: 1, name: 'Food Market', image: 'https://images.unsplash.com/photo-1543168256-418811576931?q=80&w=1200' },
-  { id: 2, name: 'Building Materials', image: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1200' },
+  { id: 2, name: 'Material', image: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1200' },
   { id: 3, name: 'Electronics Hub', image: 'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200' },
   { id: 4, name: 'Clothing & Fashion', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1200' },
 ];
