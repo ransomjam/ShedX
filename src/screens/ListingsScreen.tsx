@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { listProductsWithVendorsAPI, Product } from "../services/api";
 import { colors, spacing, typography } from "../theme";
-import ProductCard from "../components/ui/ProductCard";
+import ProductCard from "../components/ProductCard";
 
 function prettyCategory(key?: string) {
   if (!key) return "Other";

@@ -7,7 +7,7 @@ import { colors, spacing, typography } from "../theme";
 import { Card } from "../components/ui/Card";
 import VerificationBadge from "../components/ui/VerificationBadge";
 import StatTile from "../components/ui/StatTile";
-import ProductCard from "../components/ui/ProductCard";
+import ProductCard from "../components/ProductCard";
 import Button from "../components/ui/Button";
 
 export default function ProfileScreen(){
