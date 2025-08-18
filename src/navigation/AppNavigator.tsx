@@ -36,6 +36,7 @@ function Tabs() {
       initialRouteName="Home"
       screenOptions={({ route }) => ({
         headerTitleAlign: 'center',
+        headerShown: true,
         tabBarShowLabel: true,
         tabBarActiveTintColor: '#2563eb',
         tabBarInactiveTintColor: '#64748b',
