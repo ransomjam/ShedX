@@ -7,14 +7,12 @@ import { Ionicons } from '@expo/vector-icons';
 // Tab screens
 import Home from '../screens/Home';
 import Listings from '../screens/Listings';
-import Markets from '../screens/Markets';
-import Assets from '../screens/Assets';
 import Services from '../screens/Services';
 import Auctions from '../screens/Auctions';
+import AddListing from '../screens/AddListing';
 
 // Stack screens
 import ProductDetails from '../screens/ProductDetails';
-import AddListing from '../screens/AddListing';
 import Search from '../screens/Search';
 
 export type RootStackParamList = {
@@ -45,20 +43,18 @@ function Tabs() {
           const map: Record<string, string> = {
             Home: 'home-outline',
             Listings: 'grid-outline',
-            Markets: 'pricetag-outline',
-            Assets: 'briefcase-outline',
-            Services: 'bag-outline',
-            Auctions: 'cash-outline',
+            Services: 'construct-outline',
+            AddListing: 'add-circle-outline',
+            Auctions: 'hammer',
           };
           return <Ionicons name={map[route.name] || 'ellipse-outline'} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Listings" component={Listings} />
-      <Tab.Screen name="Markets" component={Markets} />
-      <Tab.Screen name="Assets" component={Assets} />
+      <Tab.Screen name="Listings" component={Listings} options={{ title: 'List' }} />
       <Tab.Screen name="Services" component={Services} />
+      <Tab.Screen name="AddListing" component={AddListing} options={{ title: 'Add' }} />
       <Tab.Screen name="Auctions" component={Auctions} />
     </Tab.Navigator>
   );
@@ -71,7 +67,6 @@ export default function AppNavigator() {
         <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
         <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ title: 'Details' }} />
         <Stack.Screen name="Search" component={Search} options={{ title: 'Search' }} />
-        <Stack.Screen name="AddListing" component={AddListing} options={{ title: 'Add Listing' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
