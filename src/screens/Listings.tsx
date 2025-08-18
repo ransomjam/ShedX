@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts } from '../api/products';
@@ -37,7 +37,7 @@ export default function Listings() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => {/* TODO: Your Price flow */}}
+              onPress={() => Alert.alert('Your Price', 'Feature coming soon!')}
               className="rounded-2xl py-2 px-4 border border-gray-300 items-center"
             >
               <Text className="text-gray-900">Your Price</Text>

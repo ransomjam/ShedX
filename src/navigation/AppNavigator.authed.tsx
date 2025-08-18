@@ -17,6 +17,16 @@ const Placeholder = ({ title }: { title: string }) => (
   </View>
 );
 
+const HomePlaceholder: React.FC = () => (
+  <Placeholder title="Home (hook up your Home screen here)" />
+);
+const ListingsPlaceholder: React.FC = () => (
+  <Placeholder title="Listings (hook up your Listings screen here)" />
+);
+const ProfilePlaceholder: React.FC = () => (
+  <Placeholder title="Profile (hook up your Profile screen here)" />
+);
+
 // ---- Param Lists ----
 export type RootStackParamList = {
   Tabs: undefined;
@@ -40,22 +50,19 @@ function Tabs() {
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
         name="Home"
-        // @ts-ignore
-        component={() => <Placeholder title="Home (hook up your Home screen here)" />}
+        component={HomePlaceholder}
         options={{ title: "Home" }}
       />
       <Tab.Screen
         name="Listings"
-        // @ts-ignore
-        component={() => <Placeholder title="Listings (hook up your Listings screen here)" />}
+        component={ListingsPlaceholder}
         options={{ title: "Listings" }}
       />
       <Tab.Screen name="MessagesTab" component={Messages} options={{ title: "Messages" }} />
       <Tab.Screen name="NotificationsTab" component={Notifications} options={{ title: "Alerts" }} />
       <Tab.Screen
         name="Profile"
-        // @ts-ignore
-        component={() => <Placeholder title="Profile (hook up your Profile screen here)" />}
+        component={ProfilePlaceholder}
         options={{ title: "Profile" }}
       />
     </Tab.Navigator>
