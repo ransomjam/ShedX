@@ -6,7 +6,7 @@ import { listProductsAPI, Product } from "../services/api";
 import { colors, spacing, typography } from "../theme";
 import { Card } from "../components/ui/Card";
 import StatTile from "../components/ui/StatTile";
-import ProductCard from "../components/ui/ProductCard";
+import ProductCard from "../components/ProductCard";
 
 export default function HomeScreen() {
   const nav = useNavigation<any>();
