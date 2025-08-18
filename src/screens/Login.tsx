@@ -38,8 +38,8 @@ export default function Login() {
   const { login } = useAuth();
   const navigation = useNavigation<Nav>();
 
-  const [email, setEmail] = useState("jam@example.com");
-  const [password, setPassword] = useState("pass123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const finishLogin = async (token: string) => {

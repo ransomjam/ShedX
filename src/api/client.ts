@@ -1,6 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://backendshedx-production.up.railway.app';
+import { API_URL } from '../../config';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -13,7 +12,8 @@ async function request(path: string, method: HttpMethod = 'GET', body?: any) {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const url = `${API_URL}${path.startsWith('/') ? path : `/${path}`}`;
+  const res = await fetch(url, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
@@ -32,18 +32,18 @@ async function request(path: string, method: HttpMethod = 'GET', body?: any) {
 
 export const api = {
   // Auth
-  login: (email: string, password: string) => request('/api/auth/login', 'POST', { email, password }),
-  me: () => request('/api/users/me', 'GET'),
+  login: (email: string, password: string) => request('/auth/login', 'POST', { email, password }),
+  me: () => request('/users/me', 'GET'),
 
   // Products
-  listProducts: () => request('/api/products', 'GET'),
-  getProduct: (id: number | string) => request(`/api/products/${id}`, 'GET'),
-  searchProducts: (q: string) => request(`/api/products/search?q=${encodeURIComponent(q)}`, 'GET'),
+  listProducts: () => request('/products', 'GET'),
+  getProduct: (id: number | string) => request(`/products/${id}`, 'GET'),
+  searchProducts: (q: string) => request(`/products/search?q=${encodeURIComponent(q)}`, 'GET'),
 
   // Vendors
-  getVendor: (id: string | number) => request(`/api/vendors/${id}`, 'GET'),
-  getVendorProducts: (id: string | number) => request(`/api/vendors/${id}/products`, 'GET'),
+  getVendor: (id: string | number) => request(`/vendors/${id}`, 'GET'),
+  getVendorProducts: (id: string | number) => request(`/vendors/${id}/products`, 'GET'),
 
   // Categories (optional endpoint; fallback client-side)
-  listCategories: () => request('/api/products/categories', 'GET'),
+  listCategories: () => request('/products/categories', 'GET'),
 };
